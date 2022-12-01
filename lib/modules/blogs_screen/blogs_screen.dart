@@ -12,9 +12,31 @@ import 'add_blogs_screen.dart';
 import 'blogs_details_screen.dart';
 
 // ignore: must_be_immutable
-class BlogsScreen extends StatelessWidget {
+class BlogsScreen extends StatefulWidget {
   BlogsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<BlogsScreen> createState() => _BlogsScreenState();
+}
+
+class _BlogsScreenState extends State<BlogsScreen>
+    with SingleTickerProviderStateMixin {
   var imagesController = PageController();
+
+  late TabController controller;
+
+  int selectedIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    controller = TabController(length: 5, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,100 +44,248 @@ class BlogsScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
+          backgroundColor: const Color.fromRGBO(244, 243, 243, 1),
           appBar: AppBar(
-            title: const Text("Articles"),
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    navigateTo(context, const SearchScreen());
-                  },
-                  icon: const Icon(Icons.search))
-            ],
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.menu,
+                color: Colors.black87,
+              ),
+              onPressed: () {},
+            ),
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: defaultColor,
             child: const Icon(Icons.edit),
             onPressed: () {
+              AppCubit.get(context).getCategory("Yoga");
               navigateTo(context, AddBlogsScreen());
             },
           ),
-          body: AppCubit.get(context).articles.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.only(
-                      top: 20.0, left: 18.0, bottom: 20.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            'LATEST ARTICLES',
-                            style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
-                          ),
-                          const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.all(18.0),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: defaultColor),
-                              onPressed: () {
-                                navigateTo(context, AddBlogsScreen());
-                              },
-                              child: const Text('ADD ARTICLE'),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Expanded(child: Container()),
-                      const Text(
-                        "no articles yet!",
-                        style: TextStyle(color: defaultColor),
-                      ),
-                      Expanded(child: Container())
-                    ],
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.only(
-                      top: 20.0, left: 18.0, bottom: 20.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: const [
-                            Text(
-                              'LATEST ARTICLES',
-                              style: TextStyle(
-                                  fontSize: 20.0, fontWeight: FontWeight.bold),
-                            ),
-                          ],
+          /*          bottomNavigationBar: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.vertical(bottom: Radius.circular(30))),
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  height: 5,
+                ),
+                const Text(
+                  'Categories',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(244, 243, 243, 1),
+                      borderRadius: BorderRadius.circular(15)),
+                  child: TextField(
+                    onTap: () => navigateTo(context, const SearchScreen()),
+                    decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.black87,
                         ),
-                        const SizedBox(
-                          height: 10.0,
-                        ),
-                        ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            reverse: true,
-                            physics: const ScrollPhysics(),
-                            itemBuilder: (context, index) => articleItem(
-                                AppCubit.get(context).articles[index],
-                                index,
-                                context),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(
-                                  height: 15.0,
-                                ),
-                            itemCount: AppCubit.get(context).articles.length),
-                      ],
-                    ),
+                        hintText: "Search you're looking for",
+                        hintStyle:
+                            TextStyle(color: Colors.grey, fontSize: 15)),
                   ),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
+                TabBar(
+                    controller: controller,
+                    indicatorColor: Colors.transparent,
+                    labelColor: const Color(0xFFC88D67),
+                    isScrollable: true,
+                    labelPadding: const EdgeInsets.only(right: 30.0),
+                    unselectedLabelColor: const Color(0xFFCDCDCD),
+                    tabs: const [
+                      Tab(
+                        child: Text('All',
+                            style: TextStyle(
+                              fontFamily: 'Varela',
+                              fontSize: 21.0,
+                            )),
+                      ),
+                      Tab(
+                        child: Text('Hospitals',
+                            style: TextStyle(
+                              fontFamily: 'Varela',
+                              fontSize: 21.0,
+                            )),
+                      ),
+                      Tab(
+                        child: Text('Clinics',
+                            style: TextStyle(
+                              fontFamily: 'Varela',
+                              fontSize: 21.0,
+                            )),
+                      ),
+                      Tab(
+                        child: Text('Dental Clinics',
+                            style: TextStyle(
+                              fontFamily: 'Varela',
+                              fontSize: 21.0,
+                            )),
+                      ),
+                      Tab(
+                        child: Text('medical labs',
+                            style: TextStyle(
+                              fontFamily: 'Varela',
+                              fontSize: 21.0,
+                            )),
+                      )
+                    ]),
+              ],
+            ),
+          ),
+    */
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(bottom: Radius.circular(30))),
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      'Categories',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: const Color.fromRGBO(244, 243, 243, 1),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: TextField(
+                        onTap: () => navigateTo(context, const SearchScreen()),
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.black87,
+                            ),
+                            hintText: "Search you're looking for",
+                            hintStyle:
+                                TextStyle(color: Colors.grey, fontSize: 15)),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TabBar(
+                        controller: controller,
+                        indicatorColor: Colors.transparent,
+                        labelColor: const Color(0xFFC88D67),
+                        isScrollable: true,
+                        labelPadding: const EdgeInsets.only(right: 30.0),
+                        unselectedLabelColor: const Color(0xFFCDCDCD),
+                        tabs: const [
+                          Tab(
+                            child: Text('All',
+                                style: TextStyle(
+                                  fontFamily: 'Varela',
+                                  fontSize: 21.0,
+                                )),
+                          ),
+                          Tab(
+                            child: Text('Hospitals',
+                                style: TextStyle(
+                                  fontFamily: 'Varela',
+                                  fontSize: 21.0,
+                                )),
+                          ),
+                          Tab(
+                            child: Text('Clinics',
+                                style: TextStyle(
+                                  fontFamily: 'Varela',
+                                  fontSize: 21.0,
+                                )),
+                          ),
+                          Tab(
+                            child: Text('Dental Clinics',
+                                style: TextStyle(
+                                  fontFamily: 'Varela',
+                                  fontSize: 21.0,
+                                )),
+                          ),
+                          Tab(
+                            child: Text('medical labs',
+                                style: TextStyle(
+                                  fontFamily: 'Varela',
+                                  fontSize: 21.0,
+                                )),
+                          )
+                        ]),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Expanded(
+                child: TabBarView(controller: controller, children: [
+                  list(AppCubit.get(context).allCategory),
+                  list(AppCubit.get(context).hospitals),
+                  list(AppCubit.get(context).clinics),
+                  list(AppCubit.get(context).dentalClinics),
+                  list(AppCubit.get(context).medicalLabs)
+                ]),
+              ),
+            ],
+          ),
         );
       },
     );
   }
+
+  Widget list(List list) => list.isEmpty
+      ? const Center(
+          child: Text("empty!"),
+        )
+      : Padding(
+          padding: const EdgeInsets.only(top: 10.0, left: 18.0, bottom: 20.0),
+          child: ListView.separated(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              physics: const ScrollPhysics(),
+              itemBuilder: (context, index) =>
+                  articleItem(list[index], index, context),
+              separatorBuilder: (context, index) => const SizedBox(
+                    height: 15.0,
+                  ),
+              itemCount: list.length),
+        );
 
   Widget articleItem(ArticlesModel? model, var index, context) => Padding(
         padding: const EdgeInsets.only(right: 18.0),

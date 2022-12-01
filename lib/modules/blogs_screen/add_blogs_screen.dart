@@ -113,10 +113,10 @@ class AddBlogsScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      buildRadioBig('Therapy', context),
-                      buildRadioBig('Yoga', context),
-                      buildRadioBig('Life Coach', context),
-                      buildRadioBig('Nutrition', context),
+                      buildRadioBig('Hospitals', context),
+                      buildRadioBig('Clinics', context),
+                      buildRadioBig('Dental Clinics', context),
+                      buildRadioBig('medical labs', context),
                     ],
                   ),
                 ));

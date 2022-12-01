@@ -25,3 +25,7 @@ class AppLoadingSearchArticleState extends AppStates {}
 class AppSuccessSearchArticleState extends AppStates {}
 
 class AppErrorSearchArticleState extends AppStates {}
+
+class AppSuccessSortArticleState extends AppStates {}
+
+class AppErrorSortArticleState extends AppStates {}

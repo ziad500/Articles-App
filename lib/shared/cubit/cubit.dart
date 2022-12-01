@@ -69,13 +69,22 @@ class AppCubit extends Cubit<AppStates> {
             .toMap())
         .then((value) {
       getArticles();
+      titleController.clear();
+      contentController.clear();
+      categoryArticlevalue = 'Category';
+      locationController.clear();
+      images = [];
       emit(AppSuccessAddArticleState());
     }).catchError((error) {
       emit(AppErrorAddArticleState());
     });
   }
 
-  List<ArticlesModel> articles = [];
+  List<ArticlesModel> allCategory = [];
+  List<ArticlesModel> hospitals = [];
+  List<ArticlesModel> clinics = [];
+  List<ArticlesModel> dentalClinics = [];
+  List<ArticlesModel> medicalLabs = [];
 
   List<String> urls = [];
   firebase_storage.Reference? ref;
@@ -108,11 +117,24 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   void getArticles() {
-    articles = [];
+    allCategory = [];
     emit(AppLoadingGetArticleState());
-    FirebaseFirestore.instance.collection('articles').get().then((value) {
+    FirebaseFirestore.instance
+        .collection('articles')
+        .orderBy("time", descending: true)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
-        articles.add(ArticlesModel.fromJson(element.data()));
+        if (element['category'] == "Dental Clinics") {
+          dentalClinics.add(ArticlesModel.fromJson(element.data()));
+        } else if (element['category'] == "Clinics") {
+          clinics.add(ArticlesModel.fromJson(element.data()));
+        } else if (element['category'] == "Hospitals") {
+          hospitals.add(ArticlesModel.fromJson(element.data()));
+        } else if (element['category'] == "medical labs") {
+          medicalLabs.add(ArticlesModel.fromJson(element.data()));
+        }
+        allCategory.add(ArticlesModel.fromJson(element.data()));
       }
       emit(AppSuccessGetArticleState());
     }).catchError((error) {
@@ -124,17 +146,27 @@ class AppCubit extends Cubit<AppStates> {
 
   void search(String name) {
     emit(AppLoadingSearchArticleState());
-    List<ArticlesModel> searchList2 = [];
-
-    searchList2 = articles
+    searchList = allCategory
         .where((element) =>
             element.title!.toLowerCase().contains(name.toLowerCase()))
         .toList();
-    searchList = searchList2;
     if (searchList.isNotEmpty) {
       emit(AppSuccessSearchArticleState());
     } else {
       emit(AppErrorSearchArticleState());
+    }
+  }
+
+  List<ArticlesModel> categoryList = [];
+  void getCategory(String name) {
+    categoryList = allCategory
+        .where((element) =>
+            element.category!.toLowerCase().contains(name.toLowerCase()))
+        .toList();
+    if (categoryList.isNotEmpty) {
+      emit(AppSuccessSortArticleState());
+    } else {
+      emit(AppErrorSortArticleState());
     }
   }
 }
